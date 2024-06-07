@@ -1,0 +1,46 @@
+version: '3'
+services:
+  loki:
+    image: docker.io/grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  prometheus:
+    image: docker.io/prom/prometheus:v2.47.0
+    command:
+      - --web.enable-remote-write-receiver
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  dashboards:
+    image: docker.io/infocura/infocare-dashboards:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./ds.yml:/etc/grafana/provisioning/datasources/ds.yaml"
+  
+  remote-agent:
+    image: docker.io/infocura/infocare-remote-agent:latest
+    ports:
+      - "12345:12345"
+    volumes:
+      - "./config.river:/etc/agent/config.river"
+
+  pdc-agent:
+    image: docker.io/grafana/pdc-agent:latest
+    entrypoint:
+      - "/usr/bin/pdc"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    ipc: "private"
+    network_mode: "host"
+    command:
+      - "-token"
+      - "${ICARE_PDC_TOKEN}" 
+      - "-cluster"
+      - "prod-eu-west-2"
+      - "-gcloud-hosted-grafana-id"
+      - "850040"
+    user: "30000:30000"
