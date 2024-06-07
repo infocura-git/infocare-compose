@@ -1,6 +1,23 @@
-### Before we begin
+### Monitoring User
+To be able to collect metrics from a database, a monitoring user should be defined with the right privileges.
+A file containing all the grants is provided at _sql/monitor-grants.sql_.  
+If you chose to name the monitoring user anything different then *infocare*, you will need to adapt this file accordingly.
 
-Make sure a monitor user exists on the database server and grant that user the right privileges
+### Network Traffic Rules
+#### Grafana Cloud
+To establish an SSH connection to Grafana Cloud, the PDC agent must run on a network that allows internet egress to the following endpoints: 
+
+```
+private-datasource-connect-prod-eu-west-2.grafana.net:22
+private-datasource-connect-api-prod-eu-west-2.grafana.net:443
+``` 
+
+#### Dashboards
+In order to access the local dashboards of the Infocare deplyment, the network must allow ingress traffic towards the infocare-container.
+
+
+### PDC Token
+In order for the Private Datasource Connect to run, a valid token must be supplied. This token needs to be generated when a new PDC network is defined in Grafana Cloud.
 
 
 ### Infocare Containers
